@@ -4,7 +4,7 @@ const urlSchema = new mongoose.Schema({
   urlCode: String,
   longUrl: String,
   shortUrl: String,
-  date: { type: String, default: Date.now }
+  date: String
 })
 
 const Url = mongoose.model('Url', urlSchema)

@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const { MongoMemoryServer } = require('mongodb-memory-server')
+const validUrl = require('valid-url')
+const shortid = require('shortid')
 const db = require('../db')
 const buildCreateUrl = require('./create-url')
 
@@ -10,7 +12,8 @@ beforeAll(done => {
     const mongooseOpts = {
       autoReconnect: true,
       reconnectTries: Number.MAX_VALUE,
-      reconnectInterval: 1000
+      reconnectInterval: 1000,
+      useNewUrlParser: true
     }
 
     mongoose.connect(mongoUri, mongooseOpts)
@@ -35,12 +38,36 @@ afterAll(async () => {
   await mongoServer.stop()
 })
 
+const FAKE_SHORT_CODE = 'aaa'
+const FAKE_BASE_URL = 'http://localhost:5000'
+let createUrl
+
+beforeEach(() => {
+  createUrl = buildCreateUrl({
+    saveUrl: db.Url.create,
+    isValidUrl: validUrl.isUri,
+    createUrlCode: () => FAKE_SHORT_CODE,
+    baseUrl: FAKE_BASE_URL
+  })
+})
+
 it('throws if baseUrl is not a valid uri', () => {
-  const createUrl = buildCreateUrl({ saveUrl: db.Url.create })
   return expect(createUrl('notvaliduri')).rejects.toThrow(
     '"notvaliduri" is not a valid URL.'
   )
 })
 
-it.todo('resolves promise for new url and adds it to db')
+it.skip('resolves promise for new url and adds it to db', async () => {
+  const date = Date.now()
+  const url = await createUrl('https://www.google.com', date)
+  expect(url).toEqual({
+    longUrl: 'https://www.google.com',
+    date: date.toString(),
+    urlCode: FAKE_SHORT_CODE,
+    shortUrl: `${FAKE_BASE_URL}/${FAKE_SHORT_CODE}`
+  })
+
+  // TODO:
+  // use findUrl to assert that url was added to the db
+})
 it.todo('must not be an existing url with same baseUrl')
