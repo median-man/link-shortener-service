@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const { MongoMemoryServer } = require('mongodb-memory-server')
 const validUrl = require('valid-url')
-const shortid = require('shortid')
 const db = require('../db')
 const buildCreateUrl = require('./create-url')
 
@@ -46,6 +45,8 @@ beforeEach(() => {
   createUrl = buildCreateUrl({
     saveUrl: db.Url.create,
     isValidUrl: validUrl.isUri,
+    
+    // mock shortid because it creates random ids
     createUrlCode: () => FAKE_SHORT_CODE,
     baseUrl: FAKE_BASE_URL
   })
@@ -57,7 +58,7 @@ it('throws if baseUrl is not a valid uri', () => {
   )
 })
 
-it.skip('resolves promise for new url and adds it to db', async () => {
+it('resolves promise for new url', async () => {
   const date = Date.now()
   const url = await createUrl('https://www.google.com', date)
   expect(url).toEqual({
@@ -66,8 +67,6 @@ it.skip('resolves promise for new url and adds it to db', async () => {
     urlCode: FAKE_SHORT_CODE,
     shortUrl: `${FAKE_BASE_URL}/${FAKE_SHORT_CODE}`
   })
-
-  // TODO:
-  // use findUrl to assert that url was added to the db
 })
+it.todo('adds url to database')
 it.todo('must not be an existing url with same baseUrl')
