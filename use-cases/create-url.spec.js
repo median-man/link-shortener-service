@@ -12,7 +12,8 @@ beforeAll(done => {
       autoReconnect: true,
       reconnectTries: Number.MAX_VALUE,
       reconnectInterval: 1000,
-      useNewUrlParser: true
+      useNewUrlParser: true,
+      useCreateIndex: true
     }
 
     mongoose.connect(mongoUri, mongooseOpts)
@@ -84,5 +85,3 @@ test('adds url to database', async () => {
     shortUrl: `${FAKE_BASE_URL}/${FAKE_SHORT_CODE}`
   })
 })
-
-test.todo('must not be an existing url with same baseUrl')

@@ -5,7 +5,8 @@ const mongoUri = config.get('mongoURI')
 const connectDB = async () => {
   try {
     await mongoose.connect(mongoUri, {
-      useNewUrlParser: true
+      useNewUrlParser: true,
+      useCreateIndex: true
     })
   } catch (error) {
     console.error(`There was an error connecting to MongoDB at ${mongoUri}.`)
